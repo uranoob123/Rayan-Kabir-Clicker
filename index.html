@@ -226,7 +226,6 @@
         .btn-save { background-color: #27ae60; }
         .btn-reset { background-color: #c0392b; }
 
-        /* Little pop-up notification for saving */
         #saveNotice {
             position: absolute;
             bottom: 20px;
@@ -335,8 +334,6 @@
         let factoryCost = 1000;
         let mineCost = 4000;
 
-        // --- NEW: Save & Load System ---
-
         function saveGame(showNotice = false) {
             let gameSave = {
                 score: score,
@@ -352,10 +349,8 @@
                 mineCost: mineCost
             };
             
-            // Stores the data in the browser
             localStorage.setItem("rayanClickerSave", JSON.stringify(gameSave));
 
-            // Shows the pop-up if requested
             if (showNotice) {
                 let notice = document.getElementById("saveNotice");
                 notice.style.opacity = 1;
@@ -366,7 +361,6 @@
         function loadGame() {
             let savedGame = JSON.parse(localStorage.getItem("rayanClickerSave"));
             
-            // If save data exists, load it into our variables
             if (savedGame !== null) {
                 if (typeof savedGame.score !== "undefined") score = savedGame.score;
                 if (typeof savedGame.clickPower !== "undefined") clickPower = savedGame.clickPower;
@@ -381,34 +375,31 @@
                 if (typeof savedGame.factoryCost !== "undefined") factoryCost = savedGame.factoryCost;
                 if (typeof savedGame.mineCost !== "undefined") mineCost = savedGame.mineCost;
 
-                // Load the correct image based on the saved evolution stage
+                // Restores the correct image including rayan5
                 if (evolutionStage === 1) document.getElementById("rayanImage").src = "rayan1.png";
                 if (evolutionStage === 2) document.getElementById("rayanImage").src = "rayan2.png";
                 if (evolutionStage === 3) document.getElementById("rayanImage").src = "rayan3.png";
+                if (evolutionStage === 4) document.getElementById("rayanImage").src = "rayan4.png";
+                if (evolutionStage === 5) document.getElementById("rayanImage").src = "rayan5.png";
             }
         }
 
         function resetGame() {
             if (confirm("Are you sure you want to completely reset your progress? This cannot be undone!")) {
                 localStorage.removeItem("rayanClickerSave");
-                location.reload(); // Refreshes the page to start totally fresh
+                location.reload(); 
             }
         }
 
-        // Auto-save every 10 seconds (10000 milliseconds)
         setInterval(() => {
             saveGame();
         }, 10000);
 
-        // -------------------------------
-
-        // Core Game Functions
         function clickRayan() {
             score += clickPower;
             updateDisplay();
         }
 
-        // Shop Functions
         function buyClickUpgrade() {
             if (score >= clickUpgradeCost) {
                 score -= clickUpgradeCost;
@@ -454,7 +445,6 @@
             }
         }
 
-        // Auto-Clicker Loop 
         setInterval(() => {
             let totalPPS = (autoClickers * 1) + (factories * 10) + (mines * 50);
             
@@ -464,12 +454,10 @@
             }
         }, 100);
 
-        // Update UI Function
         function updateDisplay() {
             document.getElementById("score").innerText = Math.floor(score);
             document.getElementById("clickPower").innerText = clickPower;
             
-            // Stats
             document.getElementById("autoClickers").innerText = autoClickers;
             document.getElementById("factories").innerText = factories;
             document.getElementById("mines").innerText = mines;
@@ -477,21 +465,19 @@
             let currentPPS = (autoClickers * 1) + (factories * 10) + (mines * 50);
             document.getElementById("pps").innerText = currentPPS; 
 
-            // Costs
             document.getElementById("costClickUpgrade").innerText = `Cost: ${clickUpgradeCost}`;
             document.getElementById("costAutoClicker").innerText = `Cost: ${autoClickerCost}`;
             document.getElementById("costMegaClick").innerText = `Cost: ${megaClickCost}`;
             document.getElementById("costFactory").innerText = `Cost: ${factoryCost}`;
             document.getElementById("costMine").innerText = `Cost: ${mineCost}`;
 
-            // Button Disabling
             document.getElementById("btnClickUpgrade").disabled = score < clickUpgradeCost;
             document.getElementById("btnAutoClicker").disabled = score < autoClickerCost;
             document.getElementById("btnMegaClick").disabled = score < megaClickCost;
             document.getElementById("btnFactory").disabled = score < factoryCost;
             document.getElementById("btnMine").disabled = score < mineCost;
 
-            // The Evolution Check
+            // The Expanded Evolution Check (Now goes up to stage 5!)
             if (score >= 1000 && evolutionStage === 0) {
                 document.getElementById("rayanImage").src = "rayan1.png";
                 evolutionStage = 1; 
@@ -501,11 +487,16 @@
             } else if (score >= 20000 && evolutionStage === 2) {
                 document.getElementById("rayanImage").src = "rayan3.png";
                 evolutionStage = 3; 
+            } else if (score >= 50000 && evolutionStage === 3) {
+                document.getElementById("rayanImage").src = "rayan4.png";
+                evolutionStage = 4; 
+            } else if (score >= 100000 && evolutionStage === 4) {
+                document.getElementById("rayanImage").src = "rayan5.png";
+                evolutionStage = 5; 
             }
         }
 
-        // --- Start Up ---
-        loadGame(); // Always load data before updating the display
+        loadGame(); 
         updateDisplay();
     </script>
 </body>
